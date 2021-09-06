@@ -1,0 +1,52 @@
+# ===============================
+# = SERVER CONFIG
+# ===============================
+server:
+  port: 8080
+
+spring:
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+  # ===============================
+  # = MYSQL CONFIG
+  # ===============================
+  datasource:
+    url: jdbc:mysql://localhost:3306/easyrent
+    username: easyrent
+    password: E@$yReNT
+#    driver-class-name: com.mysql.jdbc.Driver
+  # ===============================
+  # = JPA / HIBERNATE
+  # ===============================
+  # Use spring.jpa.properties.* for Hibernate native properties (the prefix is
+  # stripped before adding them to the entity manager).
+  jpa:
+    generate-ddl: true
+    # Show or not log for each sql query
+    show-sql: false
+    hibernate:
+      # Hibernate ddl auto (create, create-drop, update): with "update" the database
+      # Database will be automatically updated accordingly to java entities found in
+      # the project
+      ddl-auto: update
+    properties:
+      hibernate:
+        # The SQL dialect makes Hibernate generate better SQL for the chosen database
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        # disable OSIV so that you can handle the LazyInitializationException the right way.
+        #spring.jpa.open-in-views=false
+        enable_lazy_load_no_trans: true
+        jdbc:
+          lob:
+            # "createClob() is not yet implemented " error is prevented
+            non_contextual_creation: true
+  servlet:
+    # ===============================
+    # = MULTIPART CONFIGURATION
+    # ===============================
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
