@@ -1,1 +1,45 @@
+name: Main Branch
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+
+  test:
+    name: Test - Units & Integrations
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v2   
+        with:
+          java-version: '16'
+          distribution: 'adopt'
+      - run: ./gradlew build -P prod -x test 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Package
+          path: build/libs
+        
+  docker:
+    name: Publish - Docker Hub
+    runs-on: ubuntu-18.04
+    needs: [test]
+    env:
+      REPO: ${{ secrets.DOCKER_REPO }}
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 16.0.2
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+      - name: Build Docker image
+        run: docker build -t $REPO:latest -t $REPO:${GITHUB_SHA::8} .
+      - name: Publish Docker image
+        run: docker push $REPO
 
